@@ -1,0 +1,14 @@
+# Virtual environment — rebuild with: py -m venv .venv && pip install -r requirements.txt
+.venv/
+
+# Python / test caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Secrets and local environment
+.env
+.env.*
+
+# Local run output (SQLite DBs, agent working dir)
+runs/
