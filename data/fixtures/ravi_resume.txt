@@ -1,0 +1,20 @@
+Ravi Menon
+AI Engineer — 6 years of experience building ML and LLM products
+
+EXPERIENCE
+
+Senior AI Engineer — Northwind Health, Pune    Apr 2023 – Present
+- Built a RAG assistant that answers clinicians' policy questions over 40k internal documents (LangChain, pgvector, OpenAI)
+- I chose hybrid search over pure vector search in pgvector after recall on drug names was poor, and owned the retrieval redesign
+- Cut average answer latency from 9s to 3s by caching embeddings (Redis)
+- We added an LLM-as-judge evaluation step before releases (Ragas)
+
+Machine Learning Engineer — Kestrel Analytics, Bengaluru    Jul 2021 – Mar 2023
+- Trained and deployed churn prediction models for a telecom client (Python, scikit-learn, Airflow)
+- Maintained the team's model monitoring dashboards (Grafana)
+
+Software Engineer — Corvid Systems, Bengaluru    Sep 2020 – Jun 2021
+- Developed REST APIs for an internal ticketing tool (Java, Spring Boot)
+
+EDUCATION
+B.Tech, Computer Science — Riverton Institute of Technology, 2020

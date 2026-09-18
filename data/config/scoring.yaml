@@ -1,0 +1,155 @@
+# BAR-02 / 03 / 04 / 05 — gap-scoring configuration. DRAFT until ratified.
+#
+# Same rule as policy.py: this file is the ONLY place these numbers live. The
+# gap engine (BAR-21) reads it; no module hard-codes a value from here. Change a
+# value -> bump `version`; the version is stamped on every GapMap row so a later
+# scoring change can never pose as the one a candidate's map was built under.
+#
+# Specs: docs/spec/gap-scoring-v1.md, gap-buckets-v1.md, jd-overlay-v1.md.
+
+version: "gs1.0"
+
+# ---------------------------------------------------------------------------
+# BAR-02 — ordinals and gap size
+# ---------------------------------------------------------------------------
+depth:
+  # What a bar REQUIRES at a level (PRD §7.3 ladder). 0 = out of scope there.
+  ordinals:
+    none: 0
+    aware: 1
+    can_build: 2
+    can_design: 3
+    can_defend: 4
+  # Onboarding can prove at most this much; can_defend (4) is earned only by
+  # passing the topic's probe (an Attempt with verdict pass). D8 in arithmetic.
+  capture_max: 3
+
+evidence:
+  # Exactly EvidenceStrength.rank — never a second copy of the ladder.
+  ordinals:
+    none: 0
+    mentioned: 1
+    demonstrated: 2
+    led: 3
+  # Identity crosswalk, on purpose (gap-scoring §1.3).
+  to_depth:
+    none: 0
+    mentioned: 1
+    demonstrated: 2
+    led: 3
+
+gap:
+  formula: "max(0, required - demonstrated)"
+  min: 0
+  max: 4
+  # gap 0 = proven at this level: excluded from the map, listed as proven.
+  proven_excluded: true
+  # Computed a second time at target_level when it is above calibration level;
+  # shown separately, never merged (BAR-01 §3.3).
+  reach_gap: true
+
+# ---------------------------------------------------------------------------
+# BAR-03 — weights, recency, priority
+# ---------------------------------------------------------------------------
+weights:
+  scale_min: 1
+  scale_max: 5
+  # Fixed divisor, NOT max-in-bar: a 3 means the same thing in every bar and
+  # every version, so cross-version readiness figures stay comparable.
+  normalize_divisor: 5
+
+recency:
+  mode: piecewise # piecewise | continuous (continuous recorded, OFF for v1)
+  # MUST equal policy.RECENT_WINDOW_MONTHS (36); a test pins the two together.
+  recent_window_months: 36
+  # Factor >= 1 applied to PRIORITY only (gap size stays an honest ordinal
+  # difference). Stale evidence is weaker evidence, so its gap is more urgent.
+  factor:
+    current: 1.00
+    recent: 1.00
+    dated: 1.25
+    unknown: 1.10 # undated role: between fresh and stale
+    none: 1.00 # no evidence -> nothing to decay
+  continuous:
+    half_life_months: 36
+    max_boost: 0.5 # factor = 1 + max_boost * (1 - 2^(-months/half_life))
+
+priority:
+  formula: "gap_size * weight_norm * recency_factor"
+  round_dp: 2
+  tie_break: [priority_desc, weight_desc, bar_order]
+
+# ---------------------------------------------------------------------------
+# BAR-04 — buckets
+# ---------------------------------------------------------------------------
+buckets:
+  # PRD §7.3 / FR-B4 order == display order.
+  order:
+    - must_know
+    - should_know
+    - claimed_but_unproven
+    - optional
+    - ai_landscape
+  # Tier derived from REQUIRED depth at the calibration level; an author may
+  # override per (sub_skill x level), capped by the linter.
+  tier_by_required_depth:
+    4: must_know
+    3: must_know
+    2: should_know
+    1: optional
+    0: out_of_scope
+  max_tier_override_ratio: 0.25
+  # First match wins (gap-buckets §2.3).
+  precedence:
+    - landscape_flag # -> ai_landscape (only if gap_size > 0)
+    - probe_first # -> claimed_but_unproven (even at gap_size 0)
+    - proven # gap_size == 0 -> excluded
+    - tier # -> must_know | should_know | optional
+  # The number the UI headlines; optional + landscape never count against
+  # "% ready".
+  headline_buckets: [must_know, claimed_but_unproven]
+  unproven_sort: evidence_rank_desc
+
+# ---------------------------------------------------------------------------
+# BAR-05 — JD overlay bounds
+# ---------------------------------------------------------------------------
+jd_overlay:
+  weight_multiplier_min: 0.5
+  weight_multiplier_max: 2.0
+  weight_norm_floor: 0.1
+  weight_norm_ceiling: 1.0
+  # One step only; never onto/off ai_landscape or claimed_but_unproven.
+  tier_promotion:
+    optional: should_know
+    should_know: must_know
+  # De-emphasis lowers priority, never the level expectation.
+  never_demote_below:
+    must_know: should_know
+  max_touched_ratio: 0.40
+  evidence_required: true # verbatim JD quote per entry, else dropped
+  may_change:
+    weight: true
+    tier: true
+    required_depth: false
+    calibration_level: false
+    sub_skill_set: false
+    landscape_flag: false
+
+# ---------------------------------------------------------------------------
+# BAR-26 - fit labels (docs/spec/fit-labels-v1.md)
+# ---------------------------------------------------------------------------
+fit:
+  # UNVALIDATED starting values. No PRD basis, no outcome data behind them; D2
+  # puts outcome calibration in Phase 2 and the same applies here. Config rather
+  # than code precisely so they move without a deploy once there is evidence.
+  strong_min: 0.85
+  stretch_min: 0.55
+  # Required depth 4 is "can defend under load", which gapmap records as earned
+  # only by passing a probe. While one is unproven the best label available is
+  # Stretch: Strong fit is earned by demonstration, not by capture.
+  assessment_only_caps_at_stretch: true
+  # No label at all - not "Not yet" - when the bar is for another role or the
+  # calibration level is unknown. A fit label computed against the wrong bar is
+  # confident, specific and about nothing.
+  require_matching_bar: true
+  require_calibration_level: true

@@ -1,0 +1,59 @@
+# BAR-01 — experience-level band taxonomy. DRAFT until ratified.
+#
+# Single source for the level enum: the API's ExperienceLevel enum is generated
+# from this list (drift test), and the frontend level picker is served from it.
+# Bands are inclusive at the lower bound: years >= min_years and < next band's.
+#
+# `depth_anchor` is the DEFAULT expectation shape for authoring a bar's depth
+# matrix (docs/spec/beachhead-role-and-levels-v1.md §2). A bar may set any
+# sub-skill above or below its anchor; the anchor never overrides the matrix.
+
+version: 1
+
+levels:
+  - key: junior
+    label: Junior
+    order: 0
+    min_years: 0
+    depth_anchor: 1 # aware; builds with guidance
+  - key: mid
+    label: Mid
+    order: 1
+    min_years: 2
+    depth_anchor: 2 # can build
+  - key: senior
+    label: Senior
+    order: 2
+    min_years: 5
+    depth_anchor: 3 # can design
+  - key: staff
+    label: Staff
+    order: 3
+    min_years: 9
+    depth_anchor: 4 # can defend under load; sets direction
+  - key: principal
+    label: Principal / Lead
+    order: 4
+    min_years: 14
+    depth_anchor: 4 # as staff, broader scope
+
+# Calibration policy (D6): the bar is always read at the level derived from
+# years_experience, never at the candidate's chosen target level.
+calibration:
+  source: years_experience
+  # Clamp to the nearest level the bar actually supports, and say so to the
+  # candidate; never refuse, never clamp silently.
+  clamp_to_supported: true
+  clamp_notice: true
+
+# The beachhead role identity (D5, PRD §3). Role CONTENT lives only in
+# rolebars/<role_key>/…, never in app code (D9 / FR-I5).
+beachhead:
+  role_key: senior_ai_engineer
+  display_name: Senior AI Engineer
+  family: engineering.ai
+  supported_levels: [mid, senior, staff]
+  # The bar version the app serves. Named here, never discovered from the
+  # filesystem, so an unfinished draft cannot start serving candidates.
+  # ⚠ v0.1-placeholder is a SCAFFOLD, not the authored bar (D5 / BAR-15..18).
+  version: v0.1-placeholder

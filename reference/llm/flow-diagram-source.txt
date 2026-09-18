@@ -1,0 +1,58 @@
+CALIBER - CANDIDATE JOURNEY: WHICH AI DOES WHAT
+
+STAGE 1 - RESUME UPLOAD
+1. User uploads resume (PDF or DOCX)
+2. Python extraction layer (Code, no AI) reads raw text byte-perfect; corrupt file returns a readable error
+3. Semantic understanding - Haiku (cheap model) turns raw text into structured profile; leaves fields empty rather than guess; Code verifies every date verbatim
+   Fallback: validation fails -> one retry -> Sonnet (worker model)
+   Fallback: scanned resume -> Sonnet vision reads the PDF
+4. Skill matching - Local Embedder shortlists catalog skills -> Haiku picks only from the shortlist -> Code rejects any invented skill
+
+STAGE 2 - Q&A PROFILE BUILDING
+5. Completeness engine (Code) decides what is missing: progress bar, checklist, thinness checks
+6. Question wording - Haiku phrases the questions from the computed missing-fields list
+   Fallback: dialogue runs long or stalls -> Sonnet with a fresh start
+7. Claim verification - Sonnet pulls verbatim evidence quotes -> Opus (expert model) rules demonstrated vs mentioned -> Local Fact-Checker vetoes unsupported verdicts -> veto sends case back to Opus
+8. User confirms profile (human decides; profile is frozen)
+
+STAGE 3 - ROLE TARGETING AND READINESS
+9. Job-description breakdown - Haiku builds structured requirements; Code verifies every sentence used or discarded
+   Fallback: coverage shortfall -> Sonnet
+10. Leveling narrative ("where you stand") - Opus; never Sonnet (tone risk)
+    Fallback: wait and retry (GPT-5.6 Sol benched as backup)
+11. Gap dashboard - Code computes all numbers -> Haiku narrates them -> Code verifies every number appears verbatim
+    Fallback: verification fails -> Sonnet
+
+STAGE 4 - ASSESSMENT
+12. Assessment plan - Sonnet, every item traceable to the role bar; regeneration mode -> Haiku; escalation -> Opus with scope freeze
+13. Open questions - Opus writes question + reference answer + grading notes -> Gemini (outside examiner) solves each question blind -> mismatch rejects the question
+14. Multiple choice - Haiku overgenerates 5-10x, best items survive -> Gemini blind-checks every answer key
+15. Practical challenge - Opus writes challenge + reference solution; Haiku writes the grading harness -> harness must pass the reference and fail a broken solution
+16. Retake variants - Sonnet generates fresh variants -> Gemini checks difficulty held
+17. Mid-assessment probe - Code triggers -> Haiku writes one probe question in about a second
+    Fallback: bland probes -> Sonnet; total failure -> pre-written probe bank
+
+STAGE 5 - GRADING (THE CROWN JEWEL)
+18. The Judge - Opus grades each answer against the rubric, reasoning first, score second, pinned effort
+19. Near the pass line -> Opus grades the same answer 3 times -> median score wins
+20. Harshness correction - Code applies the deterministic offset
+21. Judge refuses an item -> a human grades it (never a silent substitute)
+22. Weekly audit - Gemini re-grades a sample, solving each question blind first; drift alarm freezes gating
+
+STAGE 6 - GUIDANCE
+23. Gap coaching - Haiku, rubric-bound, behind the never-teach guard; senior candidates escalate to Opus; never Sonnet
+24. Mock interview (later phase) - bake-off: GPT-5.6 Terra vs Gemini Flash vs Sonnet-low; Haiku gives instant in-conversation signals; full grade done async by the Judge
+
+BACKGROUND LANE (INVISIBLE TO THE USER)
+- Role bars and rubrics: Opus authors, a human approves every one
+- Real-interview question ingestion: Haiku in batch, keeps bars current
+- All similarity search: Local Embedder
+- Scheduled liveness probe: Haiku proves the pipeline is alive
+
+LEGEND
+- Haiku = cheap fast model (Claude Haiku 4.5)
+- Sonnet = everyday worker (Claude Sonnet 5)
+- Opus = expert (Claude Opus 5)
+- Gemini = outside examiner (Gemini 3.7 Flash)
+- Local = free on our own machine (bge-small embedder, MiniCheck fact-checker)
+- Code = deterministic arithmetic, no AI

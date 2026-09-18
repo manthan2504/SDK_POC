@@ -1,0 +1,6 @@
+claude-agent-sdk
+pydantic
+fastapi
+uvicorn
+pyyaml
+pytest

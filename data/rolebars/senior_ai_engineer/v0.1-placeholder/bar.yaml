@@ -1,0 +1,164 @@
+# ⚠ PLACEHOLDER ROLE-BAR — NOT THE REAL BAR. DO NOT SHIP TO A CANDIDATE.
+#
+# The real beachhead bar is BAR-15/16/17: founder-authored, two-senior calibrated
+# (D5), published only through the BAR-06 gate. None of that has happened.
+#
+# This file exists so the ARITHMETIC of the gap engine (§7.3) can be built and
+# seen working. Its content is the PRD's own Appendix D — which the PRD itself
+# labels "Illustrative slice, not exhaustive" — reshaped into the authoring
+# format. Every depth number here is a placeholder, not a judgement.
+#
+# Role CONTENT lives in this file and files like it, never in app code (D9 /
+# FR-I5). Swapping this file for the authored bar must require no code change.
+
+schema_version: 1
+role_key: senior_ai_engineer
+display_name: Senior AI Engineer
+# Must match this file's directory name: the directory is how the bar is
+# located, the field is what every citation resolves against. Drift between
+# them would make source_refs unresolvable.
+version: "v0.1-placeholder"
+status: placeholder # draft | in_review | published | retired | placeholder
+supported_levels: [mid, senior, staff]
+
+# Which free-text target roles this bar is actually FOR. A candidate whose
+# target role is not in this list gets told no bar exists for their role — they
+# never get this one's gaps under another role's name. Level words are ignored
+# when matching (the level comes from years, D6), so "Senior AI Engineer" and
+# "AI Engineer" both land here.
+role_aliases:
+  - AI Engineer
+  - AI Agent Engineer
+  - Agent Engineer
+  - Machine Learning Engineer
+  - ML Engineer
+  - AI/ML Engineer
+  - LLM Engineer
+  - Applied AI Engineer
+  - GenAI Engineer
+
+competencies:
+  - key: retrieval
+    name: Retrieval & grounding
+    sub_skills:
+      - key: retrieval.rag_design
+        name: RAG design & failure modes
+        weight: 5
+        how_tested: [open_ended, practical]
+        aliases: [rag, retrieval augmented generation, vector search, retrieval]
+        depth: { mid: 2, senior: 3, staff: 4 }
+      - key: retrieval.embeddings
+        name: Embedding selection & trade-offs
+        weight: 4
+        how_tested: [open_ended, mcq]
+        aliases: [embeddings, embedding, sentence transformers, pgvector, bge]
+        depth: { mid: 2, senior: 3, staff: 3 }
+      - key: retrieval.chunking
+        name: Chunking strategy
+        weight: 3
+        how_tested: [open_ended]
+        aliases: [chunking, chunk, text splitting]
+        depth: { mid: 1, senior: 2, staff: 3 }
+
+  - key: evaluation
+    name: Evaluation & observability
+    sub_skills:
+      - key: evaluation.llm_eval
+        name: LLM evaluation & judge calibration
+        weight: 5
+        how_tested: [open_ended, practical]
+        aliases: [evals, eval, llm evaluation, llm-as-judge, ragas, benchmarking]
+        depth: { mid: 2, senior: 3, staff: 4 }
+      - key: evaluation.observability
+        name: Observability of LLM systems
+        weight: 3
+        how_tested: [open_ended]
+        aliases: [observability, tracing, langfuse, monitoring, telemetry]
+        depth: { mid: 1, senior: 2, staff: 3 }
+
+  - key: safety
+    name: Safety & reliability
+    sub_skills:
+      - key: safety.injection
+        name: Prompt injection as a privilege problem
+        weight: 5
+        how_tested: [open_ended, practical]
+        aliases: [prompt injection, injection, jailbreak, llm security]
+        depth: { mid: 2, senior: 3, staff: 4 }
+      - key: safety.hallucination
+        name: Hallucination mitigation (grounding, abstention, verification)
+        weight: 4
+        how_tested: [open_ended]
+        aliases: [hallucination, grounding, citations, faithfulness]
+        depth: { mid: 2, senior: 3, staff: 3 }
+      - key: safety.guardrails
+        name: Guardrails in layers
+        weight: 3
+        how_tested: [open_ended]
+        aliases: [guardrails, nemo guardrails, content filtering, rails]
+        depth: { mid: 1, senior: 2, staff: 3 }
+
+  - key: systems
+    name: LLM systems & operations
+    sub_skills:
+      - key: systems.cost_latency
+        name: Cost & latency optimization (routing, caching, token reduction)
+        weight: 4
+        how_tested: [open_ended, practical]
+        aliases: [cost optimization, caching, latency, token, model routing]
+        depth: { mid: 2, senior: 3, staff: 4 }
+      - key: systems.context
+        name: Context-window management & lost-in-the-middle
+        weight: 3
+        how_tested: [open_ended]
+        aliases: [context window, long context, compaction, context management]
+        depth: { mid: 1, senior: 2, staff: 3 }
+      - key: systems.finetune_vs_rag
+        name: Fine-tuning vs RAG trade-offs
+        weight: 3
+        how_tested: [open_ended, mcq]
+        aliases: [fine-tuning, finetuning, lora, peft, adapter]
+        depth: { mid: 1, senior: 2, staff: 3 }
+
+  - key: agents
+    name: Agent architecture
+    sub_skills:
+      - key: agents.orchestration
+        name: Multi-agent orchestration & its trade-offs
+        weight: 4
+        how_tested: [open_ended, practical]
+        aliases: [agents, multi-agent, orchestration, langgraph, agent framework]
+        depth: { mid: 1, senior: 3, staff: 4 }
+      - key: agents.tool_design
+        name: Tool / function design for agents
+        weight: 3
+        how_tested: [open_ended, practical]
+        aliases: [tool use, function calling, tool design, mcp]
+        depth: { mid: 1, senior: 2, staff: 3 }
+
+  - key: foundations
+    name: Model foundations (depth bonus)
+    sub_skills:
+      - key: foundations.tokenization
+        name: Tokenization internals
+        weight: 1
+        how_tested: [mcq]
+        aliases: [tokenization, tokenizer, bpe]
+        depth: { mid: 1, senior: 1, staff: 2 }
+      - key: foundations.sampling
+        name: Sampling parameters
+        weight: 1
+        how_tested: [mcq]
+        aliases: [sampling, temperature, top-p, top_k]
+        depth: { mid: 1, senior: 1, staff: 2 }
+
+# BAR-33: the AI-landscape bucket. Every item needs a dated source before a real
+# bar publishes; these carry a placeholder source for the same reason as above.
+landscape:
+  - key: landscape.capability_limits
+    name: Where model capability and limits sit today (long-context vs RAG, agentic reliability)
+    weight: 2
+    how_tested: [open_ended]
+    aliases: [long context, agentic reliability, model capabilities]
+    depth: { mid: 1, senior: 2, staff: 2 }
+    source: "PRD Appendix D — placeholder, no dated market source yet"
