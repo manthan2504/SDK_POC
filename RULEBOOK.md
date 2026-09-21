@@ -20,7 +20,7 @@
 | **Folder** | `D:\SDKPOC\caliber-poc` (this folder) |
 | **Done so far** | Folder tree · `.venv` (Python 3.11.9) · `claude-agent-sdk 0.2.154`, `pydantic 2.13.5`, `fastapi 0.141.1`, `uvicorn 0.53.0`, `pyyaml 6.0.3`, `pytest 9.1.1` · Caliber data + reference snapshot (`data/`, `reference/`) · Step 0 `hello.py` · **Step 1: shared `run_agent()` + schema rules + example probe agent** · **Step 2: Profiler v1.1** (prompt v2, Path A + Path B, all PRD §7.1 fields, answer-quality gate, vague terms, ownership / seniority / depth signals, `cw-1` tag) · **v1.2 review fixes** (independent review: 7 bugs + 9 gaps fixed) · **Step [0] document extraction** (`app/extraction.py`, ported from Caliber + 3 fixes) · **N2 stream reading** (§3.6) · **first live run** (§16.2) → word-spacing fix (O21) + paid-result salvage · **Step 3: pipeline runner + SQLite** (sequence, retries, resume, checkpoints, audit) · **PostgreSQL as system of record** (SQLite kept for the offline suite) · **all four Profiler workloads built**: CW-1/2/3 (Haiku) + **CW-4 claim verdict (Opus 5 · high)**, CW-4 never run · **role-bar upgrades** (aliases/tools split, stated scales, collision lint) · **788 offline tests + 31 Postgres conformance tests passing** |
 | **Not yet** | Real Caliber agents. LLM login/key parked. **No live LLM calls without the user's explicit permission** (§2 rule 7) |
-| **Next step** | Step 4 — [2] Role Analyst (the first agent to slot into the runner) → optional approved live Profiler run (`step2_demo.py --live`) → Step 3 (pipeline runner + SQLite) |
+| **Next step** | Step 4 — [2] Role Analyst (the first agent to slot into the runner, and the test of whether `PIPELINE.append(...)` is all it takes). Cheap alternative first: the CW-1 repeatability harness (§16.4 / known problem 1) |
 | **Source of truth** | `D:\SDKPOC\Caliber-PRD-v1.7.html` (product) · `reference/` (Caliber's design, snapshot of `D:\Caliber`) · this file (POC rules) |
 
 ### 1.1 Code map
@@ -92,7 +92,7 @@ hooks, errors, sandbox, sessions and `SessionStore`, `TaskBudget`, betas, plugin
 
 ### 3.2 The two decisions the old boundary forced (both still stand, now by choice)
 - **Audit log and the D8 "no teaching" guard stay plain Python in the runner, not hooks.** A hook only fires
-  while a session is running; our guarantees must also hold in the 519 offline tests, on a saved `StepRun`, and
+  while a session is running; our guarantees must also hold in the 788 offline tests, on a saved `StepRun`, and
   on a re-validated result. Code that runs in both places is the stronger guard. Hooks may still be added as a
   *second* lane check (§3.6).
 - **`ResultMessage` is read in full** (§3.5 lists the observed fields) — that was the "allowed look-ahead" and is
@@ -911,7 +911,7 @@ still mostly being asked yes/no rather than to discriminate. That needs more sub
 
 ## 17. Scope
 
-**In:** the [1]–[8] pipeline for Senior AI Engineer · checkpoints as CLI prompts / API endpoints · SQLite persistence + audit · arithmetic layer · per-agent evals (small) · Appendix E demo.
+**In:** the [1]–[8] pipeline for Senior AI Engineer · checkpoints as CLI prompts / API endpoints · **PostgreSQL** persistence + audit (SQLite for the offline suite, O5) · arithmetic layer · per-agent evals (small) · Appendix E demo.
 **Out:** orchestrator/router agents · agent-to-agent anything · teaching content · auth, payments (paywall = flag), frontend, Azure · other roles · Phase 2 (Interviewer, outcome loop) · repo/code ingestion (D1) · resume file parsing beyond plain text.
 **Framing for the demo:** real Caliber calls Claude through its own provider layer (the Messages API); this POC shows how Caliber's pipeline looks with **Claude-backed steps on the Agent SDK**. The SDK is Claude-only (D10 caveat).
 

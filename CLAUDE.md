@@ -67,7 +67,7 @@ A Python POC built on the **Claude Agent SDK**, reproducing Caliber's fixed 8-ag
 ### Infrastructure
 
 - **PostgreSQL 18** is the system of record; SQLite backs the offline tests. Same `Store` interface, conformance-tested both ways. Databases `caliber_poc` / `caliber_poc_test`, role `caliber_poc`, **separate from Caliber's own database**.
-- **Git:** 73 uncommitted files, one commit ever (`173da2c`). Never pushed.
+- **Git:** 3 commits, working tree **clean** (HEAD `809f930` — Profiler CW-1..CW-4, runner, extraction). Local is **ahead of `origin/main` by 2**; nothing has ever been pushed (R2).
 - **Live spend to date: ≈ $0.89** across ~10 approved calls. The expensive lesson: a default-config `hello.py` cost **$0.378** for one question (§3.5).
 
 ### Known problems, in the order they matter
