@@ -1,3 +1,5 @@
+> **POC copy — edited 2026-09-18.** Snapshot of the Caliber file with provider-gateway material removed; everything else is verbatim.
+
 # §2 — Workload Registry (v2, LOCKED 2026-09-01)
 
 The registry is the AI layer's single directory of **what the model is allowed to be asked to
@@ -188,7 +190,7 @@ the ~70 line (xhigh re-samples run in a dedicated lane with their own cache pref
 effort change invalidates cache). The harsh-bias offset is a **deterministic layer over
 judge output**, re-fitted per model version AND prompt hash.
 - Anchor: every graded answer · Shelf: S1 Opus 5, effort **high, PINNED + versioned** (change ⇒ gold-set re-run)
-- Transport: direct SDK PROPOSED — D2 input, ON HOLD (ADR-0010). **Never server-side fallbacks. Never served from cache.**
+- **Never server-side fallbacks. Never served from cache.**
 - Fallbacks: A — within-family with OWN fitted offset, else "grade pending" · B — refusal
   (`stop_details`) → human queue as grade-of-record, S4 commit-first advisory attached ·
   D — anchor-stream judge-verdict freezes gating
@@ -283,7 +285,7 @@ vectors never share an index. Incumbent `bge-small-en-v1.5`; challenger
 - Eval: in-domain TalentCLEF-B-style set (~300 queries) — NDCG@10 + recall@50 + CPU P50/P95 · Status: not built (S2 slice, AGT-13/ARC-24)
 
 ### OPS-1 — Probe liveness agent
-The tiny scheduled call proving the LLM path (credential, gateway, provider) is alive before
+The tiny scheduled call proving the LLM path (credential, provider) is alive before
 a user hits it. **Must exercise the production path — a probe that takes a shortcut proves
 nothing.** Eval-of-record = the S3 cheap-tier gauntlet (FR-I4: no unnamed gates).
 - Shelf: S3 through the production path · Status: **partial** — `POST /api/v1/_probe/llm` exists; scheduling + gauntlet owed

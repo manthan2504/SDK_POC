@@ -109,11 +109,13 @@ def check_schema_rules(model: type[BaseModel]) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# [1] Profiler contract (CW-1 + CW-4 style). Flat on purpose: roles, projects and
-# skill claims are three lists linked by ids, so nesting stays one level deep.
-# Docstrings below are sent to the model as schema descriptions.
+# [1] Profiler contract v2 (CW-1 + CW-4 style), PRD v1.7 §7.1 blocks.
+# Flat on purpose: roles, projects, skill claims and educations are lists linked
+# by ids, so nesting stays one level deep. Evidence (a verbatim quote) always
+# comes before the label it justifies. Docstrings are sent to the model.
 # ---------------------------------------------------------------------------
 Verdict = Literal["none", "mentioned", "demonstrated", "led"]
+ProjectRole = Literal["built_solo", "led", "contributed", "owned"]
 
 
 class RoleEntry(AgentSchema):
@@ -126,6 +128,9 @@ class RoleEntry(AgentSchema):
     start_raw: str | None
     end_raw: str | None  # null when ongoing or not stated
     is_current: bool | None
+    employment_type_raw: str | None  # e.g. "Full-time", "Contract", copied as written
+    domain: str | None  # a short label for the business area, taken from the text
+    team_quote: str | None  # exact phrase about team size or leading people
 
 
 class ProjectEntry(AgentSchema):
@@ -136,8 +141,13 @@ class ProjectEntry(AgentSchema):
     role_id: str | None  # the role it appears under
     name: str | None  # a short label taken from the text
     summary_quote: str | None
+    role_quote: str | None  # exact phrase showing the candidate's part in the work
+    your_role: ProjectRole | None  # the part that role_quote supports
+    responsibilities_quote: str | None
     impact_quote: str | None
     hardest_problem_quote: str | None
+    scale_quote: str | None  # exact phrase about size, load or constraints
+    processes: list[str] | None  # ways of working the text names, e.g. "code review"
     stack: list[str] | None  # technologies the text names for this project
 
 
@@ -152,14 +162,24 @@ class SkillClaim(AgentSchema):
     confidence: Literal["high", "low"] | None
 
 
+class EducationEntry(AgentSchema):
+    """One qualification listed beneath an education heading, copied as written."""
+
+    analysis: str
+    institution_raw: str | None
+    qualification_raw: str | None
+    end_year_raw: str | None
+
+
 class ProfileDraft(AgentSchema):
-    """The career history one resume states, for the candidate to review."""
+    """The career history the candidate's material states, for the candidate to review."""
 
     analysis: str
     stated_years_raw: str | None  # the candidate's own statement, e.g. "6 years"
     roles: list[RoleEntry]
     projects: list[ProjectEntry]
     skills: list[SkillClaim]
+    educations: list[EducationEntry]
 
 
 # ---------------------------------------------------------------------------
@@ -172,3 +192,63 @@ class ProbeQuestion(AgentSchema):
     topic: str | None  # the topic as understood; null if the input is not a topic
     question: str | None  # one open-ended question; null if no sensible question exists
     difficulty: Literal["easy", "medium", "hard"] | None
+
+
+# ---------------------------------------------------------------------------
+# CW-3 skill normalise — constrained select, never an open field
+# ---------------------------------------------------------------------------
+class SkillMatch(AgentSchema):
+    """One candidate skill term, resolved to a canon key or refused."""
+
+    analysis: str  # which candidate fits and why, or why none of them do
+    skill: str | None  # the term exactly as it was given; null if it was unreadable
+    canon_key: str | None  # MUST be one of the keys offered for this term; null = none fit
+    confidence: Literal["high", "medium", "low"] | None
+
+
+class SkillNormalisation(AgentSchema):
+    """CW-3 output: every term we asked about, resolved or refused."""
+
+    analysis: str  # one or two sentences on the set as a whole
+    matches: list[SkillMatch]
+
+
+# ---------------------------------------------------------------------------
+# CW-2 elicitation — the code decides WHICH gaps; the model only phrases them
+# ---------------------------------------------------------------------------
+class PhrasedQuestion(AgentSchema):
+    """One gap, worded for the candidate."""
+
+    analysis: str  # what this gap is and why this wording suits it
+    key: str | None  # MUST be one of the keys given; null if the gap was unreadable
+    question: str | None  # the question to show; null if the gap cannot be phrased
+
+
+class Elicitation(AgentSchema):
+    """CW-2 output: one question per gap the code found, and no others."""
+
+    analysis: str  # one or two sentences on the set as a whole
+    opening: str | None  # a short line shown above the questions; null for none
+    questions: list[PhrasedQuestion]
+
+
+# ---------------------------------------------------------------------------
+# CW-4 claim–evidence verdict — is this quote ABOUT this skill, and how strongly?
+# The code already proved the quote is real (verbatim substring). The four levels
+# are the same ladder `app.candidate_profile` uses, reused on purpose: `Verdict`
+# above is the one ladder in the POC, and CW-4 answers on it or not at all.
+# ---------------------------------------------------------------------------
+class ClaimVerdict(AgentSchema):
+    """One claim: what its quote actually proves about the skill it was filed under."""
+
+    analysis: str  # what the quote is about, then how strongly it supports this skill
+    claim_id: str | None  # MUST be one of the ids given; null if the claim was unreadable
+    verdict: Verdict | None  # none / mentioned / demonstrated / led; null = no judgement
+    confidence: Literal["high", "medium", "low"] | None
+
+
+class ClaimVerdictSet(AgentSchema):
+    """CW-4 output: a verdict for every claim we asked about, and no others."""
+
+    analysis: str  # one or two sentences on the set as a whole
+    verdicts: list[ClaimVerdict]

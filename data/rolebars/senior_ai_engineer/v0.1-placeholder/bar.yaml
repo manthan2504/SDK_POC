@@ -37,6 +37,24 @@ role_aliases:
   - Applied AI Engineer
   - GenAI Engineer
 
+# What the numbers below MEAN. Copied from reference/plan/ARITHMETIC_RULES.md §6
+# so an author can see the rubric next to the value they are choosing — two
+# people writing two bars must not mean different things by "3".
+depth_scale:
+  0: nothing captured      # out of scope for this level
+  1: aware of it
+  2: can build with it
+  3: can design with it
+  4: can defend it under load   # `required: 4` means assessment-only
+weight_scale:
+  # Feeds `priority = gap x weight/5 x recency_factor` (ARITHMETIC_RULES §6), so
+  # 5 is full contribution and 1 is a fifth of it. Default is 3.
+  5: critical to the role
+  4: core
+  3: expected            # the default when a sub-skill omits `weight`
+  2: useful
+  1: peripheral
+
 competencies:
   - key: retrieval
     name: Retrieval & grounding
@@ -46,12 +64,14 @@ competencies:
         weight: 5
         how_tested: [open_ended, practical]
         aliases: [rag, retrieval augmented generation, vector search, retrieval]
+        tools: [llamaindex, llama index, haystack]
         depth: { mid: 2, senior: 3, staff: 4 }
       - key: retrieval.embeddings
         name: Embedding selection & trade-offs
         weight: 4
         how_tested: [open_ended, mcq]
-        aliases: [embeddings, embedding, sentence transformers, pgvector, bge]
+        aliases: [embeddings, embedding]
+        tools: [sentence transformers, pgvector, bge, faiss, chroma, weaviate, pinecone, qdrant, milvus]
         depth: { mid: 2, senior: 3, staff: 3 }
       - key: retrieval.chunking
         name: Chunking strategy
@@ -67,13 +87,15 @@ competencies:
         name: LLM evaluation & judge calibration
         weight: 5
         how_tested: [open_ended, practical]
-        aliases: [evals, eval, llm evaluation, llm-as-judge, ragas, benchmarking]
+        aliases: [evals, eval, llm evaluation, llm-as-judge, benchmarking]
+        tools: [ragas, deepeval, promptfoo]
         depth: { mid: 2, senior: 3, staff: 4 }
       - key: evaluation.observability
         name: Observability of LLM systems
         weight: 3
         how_tested: [open_ended]
-        aliases: [observability, tracing, langfuse, monitoring, telemetry]
+        aliases: [observability, tracing, monitoring, telemetry]
+        tools: [langfuse, langsmith, opentelemetry, phoenix]
         depth: { mid: 1, senior: 2, staff: 3 }
 
   - key: safety
@@ -95,7 +117,8 @@ competencies:
         name: Guardrails in layers
         weight: 3
         how_tested: [open_ended]
-        aliases: [guardrails, nemo guardrails, content filtering, rails]
+        aliases: [guardrails, content filtering, rails]
+        tools: [nemo guardrails, llama guard, presidio]
         depth: { mid: 1, senior: 2, staff: 3 }
 
   - key: systems
@@ -106,6 +129,7 @@ competencies:
         weight: 4
         how_tested: [open_ended, practical]
         aliases: [cost optimization, caching, latency, token, model routing]
+        tools: [vllm, litellm, tgi]
         depth: { mid: 2, senior: 3, staff: 4 }
       - key: systems.context
         name: Context-window management & lost-in-the-middle
@@ -117,7 +141,8 @@ competencies:
         name: Fine-tuning vs RAG trade-offs
         weight: 3
         how_tested: [open_ended, mcq]
-        aliases: [fine-tuning, finetuning, lora, peft, adapter]
+        aliases: [fine-tuning, finetuning, adapter]
+        tools: [lora, peft, rlhf, dpo, sft, qlora, unsloth]
         depth: { mid: 1, senior: 2, staff: 3 }
 
   - key: agents
@@ -127,13 +152,15 @@ competencies:
         name: Multi-agent orchestration & its trade-offs
         weight: 4
         how_tested: [open_ended, practical]
-        aliases: [agents, multi-agent, orchestration, langgraph, agent framework]
+        aliases: [agents, multi-agent, orchestration, agent framework]
+        tools: [langgraph, langchain, crewai, autogen, semantic kernel]
         depth: { mid: 1, senior: 3, staff: 4 }
       - key: agents.tool_design
         name: Tool / function design for agents
         weight: 3
         how_tested: [open_ended, practical]
-        aliases: [tool use, function calling, tool design, mcp]
+        aliases: [tool use, function calling, tool design]
+        tools: [mcp, openai functions, json schema tools]
         depth: { mid: 1, senior: 2, staff: 3 }
 
   - key: foundations
@@ -159,6 +186,6 @@ landscape:
     name: Where model capability and limits sit today (long-context vs RAG, agentic reliability)
     weight: 2
     how_tested: [open_ended]
-    aliases: [long context, agentic reliability, model capabilities]
+    aliases: [agentic reliability, model capabilities]
     depth: { mid: 1, senior: 2, staff: 2 }
     source: "PRD Appendix D — placeholder, no dated market source yet"

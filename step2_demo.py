@@ -27,25 +27,38 @@ def show_profile(profile: CandidateProfile) -> None:
     print("\n--- roles ---")
     for r in profile.roles:
         print(f"{r.role_id}: {r.title!s:28} @ {r.employer!s:18} {r.start} -> {r.end or ('now' if r.is_current else '?')}"
-              f"  months={r.months}  recency={r.recency}")
-    print("\n--- projects ---")
+              f"  months={r.months}  recency={r.recency}  team={r.team_size} led_team={r.led_team}")
+    print("\n--- projects (your_role, stack, answer quality) ---")
     for p in profile.projects:
-        print(f"{p.project_id} ({p.role_id}): {p.name}  stack={p.stack}")
-        print(f"     impact={'yes' if p.impact else 'MISSING'}  hardest_problem={'yes' if p.hardest_problem else 'MISSING'}")
-    print("\n--- skills (final evidence after weaker-wins) ---")
+        tiers = " ".join(f"{f}={q.tier}" for f, q in p.quality.items())
+        print(f"{p.project_id} ({p.role_id}) {p.name}: your_role={p.your_role} stack={p.stack}"
+              + (f" vague={p.vague_stack}" if p.vague_stack else ""))
+        print(f"     {tiers}")
+    print("\n--- skills (final evidence after weaker-wins, depth score) ---")
     for s in profile.skills:
         flag = "  <- probe first" if s.probe_first else ""
-        print(f"{s.evidence:13} {s.name:14} {s.recency:8} projects={s.project_ids}{flag}")
-    print("\n--- years ---")
+        print(f"{s.evidence:13} {s.name:14} depth={s.depth_score:3} {s.recency:8} projects={s.project_ids}{flag}")
+    print("\n--- signals ---")
+    print(f"ownership: {profile.ownership.level} — {profile.ownership.basis}")
+    for k, v in profile.seniority.items():
+        print(f"{k:11} {v.tier:6} {v.basis}")
+    print("\n--- years / education ---")
     print(f"stated={profile.stated_years}  dated={profile.dated_years}  used={profile.years_experience}"
           f"  mismatch={profile.years_mismatch}")
+    for e in profile.educations:
+        print(f"education: {e.qualification} — {e.institution}, {e.end_year}")
     print("\n--- grounding report (what the code caught) ---")
     for label, items in profile.grounding.model_dump().items():
         for item in items:
             print(f"[{label}] {item}")
-    print(f"\n--- completeness: {'COMPLETE' if profile.is_complete else f'{len(profile.missing_fields)} questions for the candidate'} ---")
-    for m in profile.missing_fields:
-        print(f"{m.key:32} {m.question}")
+    req = profile.required_missing
+    opt = [m for m in profile.missing_fields if not m.required]
+    state = "COMPLETE" if profile.is_complete else f"{len(req)} required questions"
+    print(f"\n--- completeness: {state}, {len(opt)} optional nudges ---")
+    for m in req:
+        print(f"REQUIRED {m.key:32} {m.question}")
+    for m in opt:
+        print(f"optional {m.key:32} {m.question}")
 
 
 def offline() -> None:

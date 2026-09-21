@@ -1,7 +1,8 @@
+> **POC copy — edited 2026-09-18.** Snapshot of the Caliber file with provider-gateway material removed; everything else is verbatim.
+
 # §4 — Routing, Providers & Prompt Governance
 
-How a workload's request becomes a model call: the binding rules, the provider seam, the
-gateway's exact role, and the versioning that makes every call reproducible. Code owners:
+How a workload's request becomes a model call: the binding rules, the provider seam, and the versioning that makes every call reproducible. Code owners:
 `api/src/caliber/llm/` (`provider.py`, `providers.py`, `routing.py`, `runtime.py`,
 `structured.py`).
 
@@ -12,7 +13,7 @@ app code (fixed §7 order, per-user state row)
   → run_agent(workload task tag, prompt bundle)         runtime.py
     → shelf lookup (workload → shelf)                   routing.py  [config, not code]
       → model lookup (shelf → model id)                 routing.py tiers + settings
-        → provider (anthropic | openclaw | fake)        providers.py [LLM_PROVIDER]
+        → provider (anthropic | fake)           providers.py [LLM_PROVIDER]
           → pin-and-log: served model, usage,
             stop_details, prompt_hash, effort           agent_call (§8.2)
 ```
@@ -28,8 +29,7 @@ Rules the flow enforces:
 
 ## 4.2 Shelf binding (the one-line-change contract)
 
-`routing.py` holds: shelf → model id · the `_PRICES` table · the OpenClaw alias map
-(canonical id ↔ `provider/model` ref) · `canonical_model_id()` normalization for echoed
+`routing.py` holds: shelf → model id · the `_PRICES` table · `canonical_model_id()` normalization for echoed
 models. Contracts:
 
 - Swapping a shelf's model touches **one line** and triggers that shelf's eval suite
@@ -38,22 +38,6 @@ models. Contracts:
 - `cost_usd` on an unknown model logs `unknown_model_for_pricing` — **never silently $0**.
   Known-free models get explicit `(0.0, 0.0)` entries, distinct from unknown.
 - Effort values pass through only to models that accept them (never Haiku).
-
-## 4.3 The gateway's exact role (ADR-0010)
-
-OpenClaw = transport/provider-mux **only**. `POST /v1/responses` to the stripped
-`caliber-mux` agent (zero tools — the run degenerates to a single model call); model pinned
-per call via `x-openclaw-model` from the alias map; stateless one-shots (never
-`previous_response_id`).
-
-**Division of labor: OpenClaw owns retries below the model boundary; Caliber owns none and
-reports errors.** Cross-model failover chains are deliberately bypassed.
-
-Gateway conformance gate (before ANY workload beyond fake/dev routes through it): served-
-model echo verified · edge param logging (the gateway currently **drops
-`reasoning.effort`** — everything silently runs at default-high; D2 input) · output-token
-monitors · weekly regrade. D1 (credential inside the gateway), D2 (judge bypasses gateway),
-D4 (PII transit) are **ON HOLD** — the judge's transport is proposed direct-SDK either way.
 
 ## 4.4 Prompt governance (registry semantics — AGT-06)
 
@@ -93,8 +77,7 @@ strings in code review's blind spot:
 
 | Condition | Behavior |
 |---|---|
-| No credential | `CredentialError` → 503 with provider-appropriate hint (`ant auth login` / gateway+token / `LLM_PROVIDER=fake`) |
-| Gateway down/404 | `GatewayUnavailableError` naming the fix; no retry storm (transport call-count == 1 is test-asserted) |
+| No credential | `CredentialError` → 503 with provider-appropriate hint (`ant auth login` / `LLM_PROVIDER=fake`) |
 | Refusal (`stop_reason: refusal`) | Class B: retry-with-repair → human queue. Judge: human queue IS grade-of-record; `stop_details` logged. **Server-side `fallbacks` stay OFF for the judge, permanently** |
 | 429/5xx | Propagate after the provider's own retries — the app reports, never loops |
 | Unparseable structured output | Class B repair path; for assists (clarify), `[]` is a valid, non-blocking answer |

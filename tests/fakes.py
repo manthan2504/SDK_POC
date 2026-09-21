@@ -2,7 +2,32 @@
 
 from typing import Any
 
-from claude_agent_sdk import ResultMessage
+from claude_agent_sdk import (
+    AssistantMessage,
+    ResultMessage,
+    TextBlock,
+    ThinkingBlock,
+    ToolUseBlock,
+)
+
+
+def make_assistant(
+    *,
+    text: str | None = None,
+    thinking: str | None = None,
+    tool: str | None = None,
+    tool_input: dict[str, Any] | None = None,
+    model: str = "claude-haiku-4-5",
+) -> AssistantMessage:
+    """One assistant turn, built from whichever blocks the test needs."""
+    content: list[Any] = []
+    if thinking is not None:
+        content.append(ThinkingBlock(thinking=thinking, signature="sig"))
+    if text is not None:
+        content.append(TextBlock(text=text))
+    if tool is not None:
+        content.append(ToolUseBlock(id="tu-1", name=tool, input=tool_input or {}))
+    return AssistantMessage(content=content, model=model)
 
 
 def make_result(structured_output: Any = None, **overrides: Any) -> ResultMessage:

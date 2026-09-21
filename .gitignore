@@ -6,9 +6,11 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 
-# Secrets and local environment
+# Secrets and local environment. `.env.example` is the committed template:
+# `.env.*` would otherwise swallow it.
 .env
 .env.*
+!.env.example
 
 # Local run output (SQLite DBs, agent working dir)
 runs/

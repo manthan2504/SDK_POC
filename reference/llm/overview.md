@@ -1,3 +1,5 @@
+> **POC copy — edited 2026-09-18.** Snapshot of the Caliber file with provider-gateway material removed; everything else is verbatim.
+
 # §1 — AI Layer Overview
 
 Why Caliber has an AI layer, what governs it, and the boundaries every other document in
@@ -50,14 +52,11 @@ model output that violates a *rule* is a defect even if the eval average looks f
 
 Same trap the reference study flagged, worth stating for this repo:
 
-1. **Dev-loop agents** — Claude Code, its skills (CLAUDE.md §3), subagents, and the
-   OpenClaw *coding agent* whose workspace is this repo. They build Caliber.
+1. **Dev-loop agents** — Claude Code, its skills (CLAUDE.md §3) and subagents. They build Caliber.
 2. **Runtime workloads** — the CW registry this suite governs. They ARE Caliber.
 
 Nothing in this suite grants the dev-loop anything, and no dev-loop convenience relaxes a
-runtime rule. (OpenClaw appears in both layers by coincidence: as box tooling for the
-dev-loop, and — per ADR-0010 — as transport-only gateway for runtime calls. The two uses
-share nothing but the binary.)
+runtime rule.
 
 ## 1.4 Core principles
 

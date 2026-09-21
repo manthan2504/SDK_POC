@@ -1,3 +1,5 @@
+> **POC copy — edited 2026-09-18.** Snapshot of the Caliber file with provider-gateway material removed; everything else is verbatim.
+
 # Caliber AI Layer — Specification Suite
 
 **This index routes with authority for everything the model layer does.** One file per
@@ -12,7 +14,7 @@ and no WORKLOG entry explains why, the code is wrong until proven otherwise.
 | Why an AI layer, the behavior spec, the boundaries | `overview.md` | §1 |
 | What the model may be asked to do — all 24 workloads, statuses, the arithmetic exclusion list | `workloads.md` | §2 |
 | The fleet, API constraints, failure modes, calendar | `models.md` | §3 |
-| How a request becomes a model call; gateway; prompt governance | `routing.md` | §4 |
+| How a request becomes a model call; prompt governance | `routing.md` | §4 |
 | Eval contracts, gold sets, the judge's integrity stack, change rule | `evals.md` | §5 |
 | Retrieval, embeddings, what may never be cached | `grounding.md` | §6 |
 | Injection posture, the 8 properties, PII gates | `safety.md` | §7 |

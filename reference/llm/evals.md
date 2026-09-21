@@ -1,3 +1,5 @@
+> **POC copy — edited 2026-09-18.** Snapshot of the Caliber file with provider-gateway material removed; everything else is verbatim.
+
 # §5 — Eval Contracts (FR-I4: no agent ships on vibes)
 
 The system that decides whether anything in workloads.md §2 is real. Evidence base:
@@ -143,6 +145,5 @@ its precise scope. "Recorded" means the stamped results file, committed.
    reproduced on the pinned model.
 4. **Effort sweeps** — before any >medium default locks.
 5. **S3 class-D migration bake-off** — before Oct 15 (models.md §3.7).
-6. Gateway conformance before production workloads route through OpenClaw (§4.3).
 
 Each step behind its named eval, drift monitoring interleaved from day one.

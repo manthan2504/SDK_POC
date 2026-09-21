@@ -1,3 +1,5 @@
+> **POC copy — edited 2026-09-18.** Snapshot of the Caliber file with provider-gateway material removed; everything else is verbatim.
+
 # §7 — Safety, Injection & Data Governance
 
 The eight cross-cutting properties (locked with Registry v2), keyed to the current OWASP
@@ -50,12 +52,9 @@ safety *filter* (near coin-flip under distribution shift).
   candidate content (S4 standing audits, dormant alternates), a recorded vendor
   retention/ZDR check + credential decision entry is required. Synthetic/gold-set work is
   unaffected. Owner: user.
-- **D4 (OPEN, ADR-0010):** resume text transiting the gateway host's transcript store vs
-  resume-parse skipping the gateway — plus purge cadence and backup exclusion if it stays.
 - **Deletion completeness** is a known open item (ARC-18): account deletion must purge artifact
-  bytes, parse rows, and any gateway transcripts — one purge path, not three.
-- Secrets: OAuth profile only (ADR-0003); the gateway's own credential (D1) never enters
-  Caliber's env; no prompt contents, credentials, or PII in logs (§8.5).
+  bytes and parse rows — one purge path.
+- Secrets: OAuth profile only (ADR-0003); no prompt contents, credentials, or PII in logs (§8.5).
 
 ## 7.5 NIST AI 600-1 mapping (lightweight, owner-per-category)
 
@@ -64,7 +63,7 @@ Categories in scope, each with its Caliber mechanism and honest gap statement:
 | Category | Mechanism | Gap (open) |
 |---|---|---|
 | Confabulation | Grounded-or-dropped + validators + planted-absence evals | Evals not yet run (all rows provisional) |
-| Data privacy / PII | HUM-3, retention-as-criterion, D4/D5 gates, ARC-18 | Account-deletion purge path; D4/D5 undecided |
+| Data privacy / PII | HUM-3, retention-as-criterion, D5 gate, ARC-18 | Account-deletion purge path; D5 undecided |
 | Information integrity | Judge integrity stack §5.5; anti-forgery property 1 | Gold set not yet rebuilt (Phase 0A) |
 | Value-chain provenance | Pin-and-log, response fingerprints, vendor-incident re-anchor | Vendor ZDR attestations not yet collected (D5) |
 

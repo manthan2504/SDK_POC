@@ -1,24 +1,21 @@
+> **POC copy — edited 2026-09-18.** Snapshot of the Caliber file with provider-gateway material removed; everything else is verbatim.
+
 # §10 — Development-Cycle Plan: Claude-Only (LOCKED 2026-09-02 · mapping researched v2, 2026-09-02)
 
 **User decision (2026-09-02): for this development cycle, Caliber uses Anthropic/Claude
 models exclusively — authenticated through the Claude OAuth profile, no API keys, no
-non-Anthropic calls — with the OpenClaw gateway as the Claude-model switching layer
-(ADR-0012).** This file is the operative model plan. Model Mapping v2 (`models.md` §3,
+non-Anthropic calls.** This file is the operative model plan. Model Mapping v2 (`models.md` §3,
 ADR-0009) remains the locked *destination*; its cross-vendor pieces are deferred, not
 deleted. v2 of this file incorporates two in-depth research passes with same-day
 primary-source verification (`research/p4_claude_premium.md`, `p4_claude_volume.md`).
 
-## 10.1 Decision effects (amended by ADR-0012)
+## 10.1 Decision effects
 
 | Item | Status |
 |---|---|
-| OpenClaw gateway | **IN the runtime path as Claude-model mux** — set up 2026-09-02 (`docs/RUNBOOK-openclaw.md`): `caliber-mux` agent live, `/v1/responses` enabled + auth-verified, token wired into `.env`. Backend model = safe `pending/awaiting-D1` placeholder — no call can fall through to the subscription runtime |
-| D1 (credential inside gateway) | **LIVE, ON HOLD** — the one gateway activation step left |
-| D2 (judge transport) | LIVE — direct SDK proposed (gateway drops `effort` today) |
-| D4 (PII through gateway) | LIVE — decide before resume text transits it |
 | D5, R1 (Terra), R3 (Sol/Terra) | Deferred with the cross-vendor destination |
 | R2 (MiniCheck) | Deferred (non-Claude); CW-4 compensates (§10.4) |
-| Live provider today | `LLM_PROVIDER=anthropic` (direct SDK); `openclaw` is one `.env` flip once D1 + conformance land |
+| Live provider today | `LLM_PROVIDER=anthropic` (direct Anthropic SDK) |
 | **Interim local provider (ADR-0015, 2026-09-03)** | **BUILT and proven live** (`api/STATUS.md` §22): `LLM_PROVIDER=local` → llama-server + Qwen3.5-4B/2B/Granite-H-Micro, schema-constrained via the OpenAI-compatible surface (never `/v1/messages` — it has no structured output and needs the banned `ANTHROPIC_BASE_URL`). Dev iteration on CW-1/2/3/6/7/10/15/22/OPS-1 only; never judge/tone/authoring; gates nothing (FR-I4). Not the default — `.env` still says `anthropic` |
 
 ## 10.2 Auth — unchanged
@@ -112,9 +109,6 @@ research adds: sweep the judge DOWN, `medium` may hold the SLO at a fraction of 
 
 | # | Decision | Owner |
 |---|---|---|
-| D1 | Credential inside the gateway (Console key recommended) — the last gateway step | user |
-| D2 | Judge bypasses gateway (recommended) vs accept-and-measure | user |
-| D4 | Resume text through gateway transcripts vs parse skips gateway | user |
 | R4 | CW-21 accept-or-commission | user |
 | R5 | Whole-bar-in-context → ADR | user + architect |
 | R6 | Inspect-AI vs hand-rolled harness → ADR | build-time |
@@ -122,7 +116,5 @@ research adds: sweep the judge DOWN, `medium` may hold the SLO at a fraction of 
 
 ## 10.8 Ready state (what "setup complete" means, achieved 2026-09-02)
 
-Provider spine built + tested (STATUS §16) · gateway configured with safe placeholder
-(RUNBOOK-openclaw) · OAuth active · mapping researched and written (this file) · report
-amended. **When credits land**: probe → S3 gauntlet → gold set → Phase 0A. When D1 lands:
-gateway credential + repoint `caliber-mux` models + conformance test → `LLM_PROVIDER=openclaw`.
+Provider spine built + tested (STATUS §16) · OAuth active · mapping researched and written (this file) · report
+amended. **When credits land**: probe → S3 gauntlet → gold set → Phase 0A.

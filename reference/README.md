@@ -10,6 +10,12 @@ Runtime data the POC will actually load lives in `../data/`, not here.
 |---|---|---|
 | `agents/AGENT_WORK_DESIGN.md` | Per-agent design: PRD demands, "never" rules, schema, prompt, validators, evals. Only §1 Profiler and §2 Role analyst are written | Every agent |
 | `agents/AGENT_PLANNING_PROCEDURE.md` | The 16-heading template Caliber uses to plan an agent | Planning each agent |
+| **`agents/AGENT_CAPABILITIES_AND_MODELS.md`** | **Consolidated (2026-09-18):** capability taxonomy, capability → agent → workload map, Claude model + effort + checker + eval + cost per workload, how Caliber's code routes today, and the POC translation. Claude-only; no gateway material | **Picking model/effort/checks for every agent** |
+| **`plan/SEQUENCING.md`** | **Stages S0–S5 with quoted exit gates, dependency rules, pipeline/orchestration items, topic-loop rules (decided vs open), the Appendix E acceptance test, sequencing traps, and the POC translation** | **Step 3 runner and the topic loop** |
+| **`plan/ARITHMETIC_RULES.md`** | **Caliber's as-built deterministic rules: policy constants, state machine + confirmation freeze, completeness weights, text tiers, evidence ladder, depth score, gap map, plan, fit labels, persistence patterns** | **All code-side logic** |
+| `plan/BACKLOG.md`, `plan/OPEN-WORK.md` | Caliber's full 224-item sequenced plan and its open-work ledger (verbatim) | Looking up an item id |
+| `llm/roadmap.md` | AI-layer build order + slice activation (**edited copy**: gateway material removed) | Build order |
+| `decisions/0005-*`, `decisions/0014-*` | Postgres is the record / queue is transport; split long steps into committed, retryable phases | Step 3 runner |
 | `llm/workloads.md` | The CW-1..22 registry: what each AI task may / may never do, and the arithmetic-only list (§2.6) | Deciding code vs model |
 | `llm/dev-cycle.md` §10.4 | Claude model + effort per workload | Picking `model` / `effort` per agent |
 | `llm/overview.md`, `safety.md`, `grounding.md` | Behaviour rules, injection posture, grounded-or-dropped | Prompts + validators |

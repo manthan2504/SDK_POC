@@ -8,6 +8,8 @@ text does not contain is rejected. Never fuzzy-accept.
 import re
 import unicodedata
 
+from app.policy import SHORT_NEEDLE_CHARS
+
 _QUOTE_MAP = str.maketrans(
     {
         "‘": "'",
@@ -37,23 +39,53 @@ def normalise_for_match(text: str) -> str:
     return t.casefold()
 
 
+# Joins sources so no needle can span two of them. U+241E (SYMBOL FOR RECORD
+# SEPARATOR) is a visible symbol: NFKC and casefold leave it unchanged, it is not
+# whitespace (so the space-collapse keeps it), and any needle that contains it
+# is refused outright, so a match can never cross from one source into the next.
+SOURCE_SEPARATOR = " ␞ "
+_SEP_CHAR = SOURCE_SEPARATOR.strip()
+
+
+def _term_pattern(norm_term: str) -> re.Pattern[str]:
+    """Whole-term pattern: no word character directly before or after."""
+    return re.compile(r"(?<!\w)" + re.escape(norm_term) + r"(?!\w)")
+
+
+def _find_term(norm_text: str, norm_term: str) -> bool:
+    return bool(norm_term) and _SEP_CHAR not in norm_term and _term_pattern(norm_term).search(norm_text) is not None
+
+
 class GroundingText:
     """The candidate's material, normalised once, for repeated verbatim checks."""
 
     def __init__(self, *sources: str) -> None:
-        self._norm = normalise_for_match("\n".join(s for s in sources if s))
+        self._norm = SOURCE_SEPARATOR.join(n for n in (normalise_for_match(s) for s in sources if s) if n)
 
     def contains(self, needle: str | None) -> bool:
-        """True only for a non-empty needle found verbatim. None/empty never counts."""
+        """True only for a non-empty needle found verbatim. None/empty never counts.
+        Needles of SHORT_NEEDLE_CHARS or fewer must stand as a whole term ("Go" is
+        not in "ago"); longer needles are plain substrings. Never spans two sources."""
         if not needle:
             return False
         n = normalise_for_match(needle)
-        return bool(n) and n in self._norm
+        if not n or _SEP_CHAR in n:
+            return False
+        if len(n) <= SHORT_NEEDLE_CHARS:
+            return _find_term(self._norm, n)
+        return n in self._norm
+
+    def contains_term(self, term: str | None) -> bool:
+        """True only if `term` occurs as a whole term (word boundaries both sides):
+        "SQL" is not in "PostgreSQL", but "C++" / ".NET" / "Node.js" match where
+        written. None/empty never counts."""
+        if not term:
+            return False
+        return _find_term(self._norm, normalise_for_match(term))
 
 
 def mentions(text: str | None, term: str | None) -> bool:
-    """Does `text` contain `term` (same normalisation)?"""
+    """Does `text` contain `term` as a whole term (same normalisation)?"""
     if not text or not term:
         return False
-    t = normalise_for_match(term)
-    return bool(t) and t in normalise_for_match(text)
+    return _find_term(normalise_for_match(text), normalise_for_match(term))

@@ -1,8 +1,9 @@
+> **POC copy — edited 2026-09-18.** Snapshot of the Caliber file with provider-gateway material removed; everything else is verbatim.
+
 # §3 — Model Policy (application-level system card)
 
-> **⚠ Development cycle override (2026-09-02, ADR-0011 + ADR-0012):** the operative
-> fleet is **Claude-only — S1/S2/S3 + local embeddings — behind the OpenClaw
-> provider-mux** (direct SDK as standing fallback; judge transport = D2, open). This
+> **⚠ Development cycle override (2026-09-02, ADR-0011):** the operative
+> fleet is **Claude-only — S1/S2/S3 + local embeddings** (direct Anthropic SDK). This
 > file remains the locked *destination* (incl. the S4 cross-vendor slot, deferred). For
 > what actually runs now, read `dev-cycle.md` §10 first; where the two disagree, §10
 > wins until the S4/D5 re-open trigger fires.
@@ -45,7 +46,7 @@ owner in the same change (§2.7).
 
 Consequences the registry already encodes: grading stability is engineered, not sampled
 (ADR-0007); **unset effort on 5-generation models means high** — an effort silently dropped
-in transport (the OpenClaw gateway today, ADR-0010/D2) is a silent cost leak on cheap rows
+in transport is a silent cost leak on cheap rows
 and a silent max→high downgrade on the judge; **an effort change invalidates the prompt
 cache** (the judge's xhigh re-sample lane carries its own cache prefix for this reason);
 citations and structured outputs are mutually exclusive (400) — the fact that forced CW-4's
